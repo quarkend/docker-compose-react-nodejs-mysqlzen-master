@@ -35,11 +35,11 @@ services:
       - backend
       - frontend
 
-  zen-ui:
+  front:
     depends_on:
       - zen-api
     build:
-      context: ./zen-ui
+      context: ./front
       args:
         - REACT_APP_API_BASE_URL=$CLIENT_API_BASE_URL
     ports:
