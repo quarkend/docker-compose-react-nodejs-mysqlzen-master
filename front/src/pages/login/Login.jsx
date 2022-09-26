@@ -23,7 +23,8 @@ export const Login = () => {
       isSubmitting: true,
       errorMessage: null,
     });
-    fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+    fetch(`http://localhost:6868/api/auth/login`, {
+
       method: "post",
       headers: {
         "Content-Type": "application/json",
