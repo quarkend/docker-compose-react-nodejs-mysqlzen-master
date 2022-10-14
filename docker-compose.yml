@@ -1,6 +1,43 @@
 version: '3.8'
 
 services:
+  # Start the agent with the latest version
+  hub-agent:
+    image: ghcr.io/traefik/hub-agent-traefik:v0.8.0
+    pull_policy: always
+    container_name: hub-agent
+    restart: "on-failure"
+    command:
+      - run
+      - --hub.token=e4feb90a-e27e-4f95-b1f9-73f07f8486bf
+      - --auth-server.advertise-url=http://hub-agent
+      - --traefik.host=traefik
+      - --traefik.tls.insecure=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - traefik
+
+  # Start Traefik with the latest version
+  traefik:
+    image: traefik:v2.8
+    container_name: traefik
+    command:
+      # Enable Hub communication (open the port 9900 and 9901 by default)
+      - --experimental.hub=true
+      - --hub.tls.insecure=true
+      - --metrics.prometheus.addrouterslabels=true
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      # ...
+
+    
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
   mysqldb:
     image: mysql:8.0.24
     restart: unless-stopped
@@ -37,11 +74,15 @@ services:
       - backend
       - frontend
 
+
   front:
     depends_on:
       - zen-api
     build:
       context: ./front
+      labels:
+      - "traefik.backend=webserver"
+      - "traefik.frontend.rule=Host:web.hinafi.local"
       args:
         - REACT_APP_API_BASE_URL=$CLIENT_API_BASE_URL
     ports:

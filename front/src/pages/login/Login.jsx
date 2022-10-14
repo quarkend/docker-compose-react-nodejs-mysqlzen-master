@@ -37,7 +37,12 @@ export const Login = () => {
       .then((res) => {
 
         if (res.ok) {
-          return res.json();
+          
+          res.cookie(res.token, { expires: new Date(Date.now() + 900000), httpOnly: true });
+          return res.json({
+              success: 1,
+              message: "login successfully",
+          });
         }
         throw res;
       })

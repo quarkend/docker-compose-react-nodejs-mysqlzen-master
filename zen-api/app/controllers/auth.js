@@ -79,14 +79,62 @@ exports.login = (req, res, next) => {
                 // },
               },
               "secretToken",
-              { expiresIn: "23h" }
+              { expiresIn: "23h" },
+              res.cookie('TOKEN', jwt, { expires: new Date(Date.now() + 900000), httpOnly: true })
             ),
+            
           });
         })
         .catch((error) => res.status(500).json({ error }));
     })
     .catch((error) => res.status(500).json({ error }));
 };
+// export const login = (req: Request, res: Response) => {
+//   const body = req.body;
+//   getUserByUserEmail(body.email, (err: any, results: any) => {
+//       if (err) {
+//           console.log(err);
+//       }
+//       if (!results) {
+//           return res.json({
+//               success: 0,
+//               message: "Invalid email or password"
+//           });
+//       }
+//       const result = compareSync(body.password, results.password);
+//       if (result) {
+//           results.password = undefined;
+//           const jsontoken = sign({ result: results }, "qwe1234", {
+//               expiresIn: "1h"
+//           });
+//           res.cookie('TOKEN', jsontoken, { expires: new Date(Date.now() + 900000), httpOnly: true });
+//           return res.json({
+//               success: 1,
+//               message: "login successfully",
+//           });
+//       } else {
+//           return res.json({
+//               success: 0,
+//               message: "Password is not correct"
+//           });
+//       }
+//   });
+// }
+
+// export const logout = (req: Request, res: Response) => {
+//   res.clearCookie('TOKEN');
+//   return res.json({
+//       success: 1,
+//   });
+// };
+
+// export const getInfo = (req: Request, res: Response) => {
+//   const userEmail = res.locals.userEmail
+//   return res.json({
+//       success: 1,
+//       email: userEmail
+//   });
+// };
 exports.getCurrentUser = async (req, res, next) => {
   const userId = req.query.userId;
   const username = req.query.username;
