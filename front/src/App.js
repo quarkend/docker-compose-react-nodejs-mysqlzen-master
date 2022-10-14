@@ -23,6 +23,9 @@ const initialState = {
   // admin: JSON.parse(localStorage.getItem("admin")) || null,
   token: null,
 };
+window.addEventListener("storage", function(data) {
+  console.debug(data);
+}, false);
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
